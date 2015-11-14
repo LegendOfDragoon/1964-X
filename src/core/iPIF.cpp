@@ -22,6 +22,7 @@
  * authors: email: schibo@emulation64.com, rice1964@yahoo.com
  */
 #include "stdafx.h"
+#include <time.h>
 
 _u8 EEProm_Status_Byte = 0x00;
 
@@ -443,9 +444,18 @@ void WriteEEprom(char *src, long offset)
     Handles all Commands which are sent to the EEprom
  =======================================================================================================================
  */
+
+unsigned char byte2bcd(int n)
+{
+	n %= 100;
+	return ((n / 10) << 4) | (n % 10);
+}
+
 BOOL EEpromCommand(_u8 *cmd)
 {
-	
+	time_t curtime_time;
+	struct tm curtime;
+
 	switch(cmd[2])
 	{
 	/* reporting eeprom state ... hmmm */
@@ -471,6 +481,47 @@ BOOL EEpromCommand(_u8 *cmd)
 	case 0x05:
 		WriteEEprom((char*)&cmd[4], cmd[3] * 8);
 		break;
+
+		/* RTC, credit: Mupen64 source */
+		/* RTC status query */
+	case 0x06:
+	    cmd[3] = 0x00;
+	    cmd[4] = 0x10;
+	    cmd[5] = 0x00;
+		break;
+
+		/* read RTC block */
+	case 0x07:
+		switch (cmd[3]) { // block number
+			case 0:
+			    cmd[4] = 0x00;
+			    cmd[5] = 0x02;
+			    cmd[12] = 0x00;
+			    break;
+			case 1:
+				//DebugMessage(M64MSG_ERROR, "RTC command in EepromCommand(): read block %d", Command[2]);
+			    break;
+			case 2:
+				time(&curtime_time);
+			    memcpy(&curtime, localtime(&curtime_time), sizeof(curtime)); // fd's fix
+			    cmd[4] = byte2bcd(curtime.tm_sec);
+			    cmd[5] = byte2bcd(curtime.tm_min);
+			    cmd[6] = 0x80 + byte2bcd(curtime.tm_hour);
+			    cmd[7] = byte2bcd(curtime.tm_mday);
+			    cmd[8] = byte2bcd(curtime.tm_wday);
+			    cmd[9] = byte2bcd(curtime.tm_mon + 1);
+			    cmd[10] = byte2bcd(curtime.tm_year);
+			    cmd[11] = byte2bcd(curtime.tm_year / 100);
+			    cmd[12] = 0x00;	// status
+			    break;
+		}
+		break;
+
+		/* write RTC block */
+	case 0x08:
+		//DebugMessage(M64MSG_ERROR, "RTC write in EepromCommand(): %d not yet implemented", Command[2]);
+		break;
+
 
 	default:
 		break;
