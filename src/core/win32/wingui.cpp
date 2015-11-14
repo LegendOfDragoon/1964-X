@@ -1030,9 +1030,7 @@ MF_UNCHECKED :
 		{
 			if(emustatus.Emu_Is_Running)
 			{
-				SuspendThread(CPUThreadHandle);
 				AUDIO_DllConfig(hWnd);
-				ResumeThread(CPUThreadHandle);
 			}
 			else
 			{
