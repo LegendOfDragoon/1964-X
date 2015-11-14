@@ -29,7 +29,7 @@ unsigned char	Scratch0[700];
 unsigned char	Scratch1[700];
 unsigned char	Scratch2[700];
 unsigned char	DistConditions[800];	/* GNU Redistribution Conditions */
-
+extern float DOUBLE_COUNT;
 
 unsigned int		cfmenulist[8] = {
 	ID_CF_CF1,	ID_CF_CF2,	ID_CF_CF3,	ID_CF_CF4,
@@ -107,6 +107,7 @@ void					LoadROMSpecificPlugins();
 void					SetXPThemes(DWORD flag);
 void					ProcessToolTips(LPARAM lParam);
 BOOL					LinkBoxArtImageByDialog(void);
+void					SetOCOptions(void);
 
 typedef struct {
 	UINT	id;
@@ -488,6 +489,7 @@ int APIENTRY aWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCm
 	emustatus.Emu_Is_Paused = FALSE;
 	emustatus.Emu_Keep_Running = FALSE;
 	emustatus.processing_exception = FALSE;
+	DWORD dwTempOC=REGISTRY_ReadDWORD("OCSpeed",100);
 
 	if( REGISTRY_ReadDWORD("1964RunningStatus", FALSE) == TRUE )
 	{
@@ -642,6 +644,7 @@ int APIENTRY aWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCm
     Set_Ready_Message();
 	RomListLoadCurrentPosFromRegistry();
 	SetFocus(gui.hwnd1964main);
+	SetOCOptions();
 
     //DisplayError("Note: This is a debug build of 1964. Be sure to disable these messageboxes for release by disabling the DisplayError() function.");
    
@@ -673,6 +676,37 @@ _HOPPITY:
 	}
 
 	goto _HOPPITY;
+}
+
+void SetOCOptions(void)
+{
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_25MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_50MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_100MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_200MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_300MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_400MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_500MHZ, MF_UNCHECKED);
+	CheckMenuItem( gui.hMenu1964main,ID_OVERCLOCK_600MHZ, MF_UNCHECKED);
+
+	if(DOUBLE_COUNT == 0.25f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_25MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 0.5f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_50MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 1.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_100MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 2.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_200MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 3.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_300MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 4.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_400MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 5.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_500MHZ, MF_CHECKED);
+	else if(DOUBLE_COUNT == 6.0f)
+		CheckMenuItem( gui.hMenu1964main, ID_OVERCLOCK_600MHZ, MF_CHECKED);
+
+	REGISTRY_WriteDWORD("OCSpeed",(DWORD)(DOUBLE_COUNT*100));	
 }
 
 /*
@@ -1343,6 +1377,47 @@ MF_UNCHECKED :
 	case ID_EXIT:
 		Exit1964();
 		break;
+
+	case ID_OVERCLOCK_25MHZ:
+		DOUBLE_COUNT = 0.25f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_50MHZ:
+		DOUBLE_COUNT = 0.5f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_100MHZ:
+		DOUBLE_COUNT = 1.0f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_200MHZ:
+		DOUBLE_COUNT = 2.0f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_300MHZ:
+		DOUBLE_COUNT = 3.0f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_400MHZ:
+		DOUBLE_COUNT = 4.0f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_500MHZ:
+		DOUBLE_COUNT = 5.0f;
+		SetOCOptions();
+		break;
+
+	case ID_OVERCLOCK_600MHZ:
+		DOUBLE_COUNT = 6.0f;
+		SetOCOptions();
+		break;
+
 	default:
 		if( LOWORD(wParam) >= NEW_LANGUAGE_MENU_START && LOWORD(wParam) < NEW_LANGUAGE_MENU_START + 200 )
 		{

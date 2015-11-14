@@ -625,35 +625,42 @@ void RunSPTask(void)
 
 			DO_PROFILIER_VIDEO;
 
-			
+			if (viorg != VI_ORIGIN_REG)
+			{
+				viframecount++;
+				viorg = VI_ORIGIN_REG;
+			}
+
 			if (emuoptions.AutoFrameSkip && emustatus.viframeskip == 1 && viframecount % 2 == 0)
 			{
 				// Skip the frame
 				Trigger_DPInterrupt();
 				(SP_STATUS_REG) |= 0x00000203;
 				Trigger_SPInterrupt();
-				if (viorg != VI_ORIGIN_REG)
-				{
-					viframecount++;
-					viorg = VI_ORIGIN_REG;
-				}
 			}
 			else
 			{
-				if (viorg != VI_ORIGIN_REG)
-				{
-					viframecount++;
-					viorg = VI_ORIGIN_REG;
-				}
 				if (rsp_plugin_is_loaded == TRUE && emuoptions.UsingRspPlugin == TRUE)
 				{
 					SPcycleUsed = DoRspCycles(100);
 				}
 				else
 				{
+					extern float DOUBLE_COUNT;
 					DWORD cycleUsed = VIDEO_ProcessDList();
 					SPcycleUsed = cycleUsed & 0xFFFF;
 					DPcycleUsed = cycleUsed >> 16;
+
+					if (DOUBLE_COUNT > 1.0f)
+					{
+						SPcycleUsed /= DOUBLE_COUNT;
+						DPcycleUsed /= DOUBLE_COUNT;
+					}
+					else if (DOUBLE_COUNT < 1.0f)
+					{
+						SPcycleUsed >>= 1;
+						DPcycleUsed >>= 1;
+					}
 				}
 			}
 

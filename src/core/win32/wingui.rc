@@ -155,6 +155,18 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "ROM Properties...\tCtrl+S",   ID_FILE_ROMINFO, GRAYED
     END
+	POPUP "OverClock"
+    BEGIN
+        MENUITEM "25MHz (4x underclock",        ID_OVERCLOCK_25MHZ
+        MENUITEM "50MHz (2x underclock)",       ID_OVERCLOCK_50MHZ
+        MENUITEM SEPARATOR
+        MENUITEM "100MHz (normal speed)",       ID_OVERCLOCK_100MHZ
+        MENUITEM "200MHz (2x overclock)",       ID_OVERCLOCK_200MHZ
+        MENUITEM "300MHz (3x overclock)",       ID_OVERCLOCK_300MHZ
+        MENUITEM "400MHz (4x overclock)",       ID_OVERCLOCK_400MHZ
+        MENUITEM "500MHz (5x overclock)",       ID_OVERCLOCK_500MHZ
+        MENUITEM "600MHz (6x overclock)",       ID_OVERCLOCK_600MHZ
+     END
     POPUP "E&mulation"
     BEGIN
         MENUITEM "&Pause/Play\tF3",             ID_ROM_PAUSE, GRAYED
