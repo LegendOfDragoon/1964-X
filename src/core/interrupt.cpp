@@ -836,6 +836,12 @@ void RunSPTask(void)
 			(SP_STATUS_REG) |= 0x00000203;
 			Trigger_RSPBreak();
 		}
+	} else if (currentromoptions.timing_Control != NO_DELAY) {
+		MI_INTR_REG_R &= ~MI_INTR_DP;
+		DPC_STATUS_REG |= DPC_STATUS_CMD_BUSY;
+		DPC_STATUS_REG |= DPC_STATUS_DMA_BUSY;
+		DPC_STATUS_REG &= ~DPC_STATUS_CBUF_READY;
+		Set_DP_DLIST_Timer_Event(0x1000);
 	}
 }
 
