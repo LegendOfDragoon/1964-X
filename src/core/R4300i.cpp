@@ -3358,7 +3358,7 @@ void Check_SW(uint32 QuerAddr, uint32 rt_ft)
 
 
 	case 0xA4100000:	/* DPC_START_REG */ 
-		DPC_START_REG = DPC_END_REG = (uint32)gHWS_GPR(rt_ft);
+		DPC_START_REG = DPC_CURRENT_REG = (uint32)gHWS_GPR(rt_ft);
 		break;
 	case 0xA4100004:	/* DPC_END_REG */	
 		DPC_END_REG = (uint32)gHWS_GPR(rt_ft);
