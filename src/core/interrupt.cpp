@@ -799,9 +799,9 @@ void RunSPTask(void)
 
 	if((MI_INTR_REG_R & MI_INTR_DP) != 0)
 	{
-		if( emuoptions.UsingRspPlugin == FALSE && DPcycleUsed > 0 ) 
+		if( emuoptions.UsingRspPlugin == FALSE) 
 		{
-			if (currentromoptions.timing_Control != NO_DELAY)
+			if (currentromoptions.timing_Control != NO_DELAY && DPcycleUsed > 0)
 			{
 				MI_INTR_REG_R &= ~MI_INTR_DP;
 				DPC_STATUS_REG |= DPC_STATUS_CMD_BUSY;
@@ -817,9 +817,9 @@ void RunSPTask(void)
 		}
 	}
 
-	if(emuoptions.UsingRspPlugin == FALSE && SPcycleUsed > 0) 
+	if(emuoptions.UsingRspPlugin == FALSE) 
 	{
-		if (currentromoptions.timing_Control != NO_DELAY)
+		if (currentromoptions.timing_Control != NO_DELAY && SPcycleUsed > 0)
 		{
 			//if( SPcycleUsed < SPTASKPCLOCKS )
 			//	SPcycleUsed = SPTASKPCLOCKS;

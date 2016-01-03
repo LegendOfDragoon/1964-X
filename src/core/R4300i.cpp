@@ -1629,7 +1629,7 @@ void r4300i_COP0_mfc0(uint32 Instruction)
 //	KAILLERA_LOG(fprintf(ktracefile, "mfc0 = %08X at compare=%08X\n", gRT, gHWS_COP0Reg[COUNT]));
 }
 
-uint32 RememberFPRHi[64];
+uint32 RememberFPRHi[16];
 
 
 extern uint32 Experiment;
@@ -1738,7 +1738,6 @@ void r4300i_COP0_mtc0(uint32 Instruction)
         
         
        Experiment = (gRT & SR_FR) ? 1 : 0;
-	//	Experiment = (uint32) (gRT & SR_FR) >> 26;
 
         //Other notes: Turok games and Perfect Dark use the other fpu mode.
   //      if ((gHWS_COP0Reg[STATUS] ^ gRT) & SR_FR)
@@ -1778,30 +1777,107 @@ void r4300i_COP0_mtc0(uint32 Instruction)
 
 		if ((gRT ^ gHWS_COP0Reg[STATUS]) & SR_FR)
 		{
-			static UINT32 temp_regs[32];
 			if (!Experiment)
 			{
-				int k;
-				//to 32bit. spans registers
-				
-				for (k = 0; k <= 30; k += 2)
-				{
-					gHWS_fpr32[k]      = gHWS_fpr32[((k + 0) * 2) + 0];
-					RememberFPRHi[k]   = gHWS_fpr32[((k + 0) * 2) + 1];
-					gHWS_fpr32[k+1]    = gHWS_fpr32[((k + 1) * 2) + 0];
-					RememberFPRHi[k+1] = gHWS_fpr32[((k + 1) * 2) + 1];
-				}
+				RememberFPRHi[ 0] = gHWS_fpr32[ 1];
+				RememberFPRHi[ 1] = gHWS_fpr32[ 3];
+				RememberFPRHi[ 2] = gHWS_fpr32[ 5];
+				RememberFPRHi[ 3] = gHWS_fpr32[ 7];
+				RememberFPRHi[ 4] = gHWS_fpr32[ 9];
+				RememberFPRHi[ 5] = gHWS_fpr32[11];
+				RememberFPRHi[ 6] = gHWS_fpr32[13];
+				RememberFPRHi[ 7] = gHWS_fpr32[15];
+				RememberFPRHi[ 8] = gHWS_fpr32[17];
+				RememberFPRHi[ 9] = gHWS_fpr32[19];
+				RememberFPRHi[10] = gHWS_fpr32[21];
+				RememberFPRHi[11] = gHWS_fpr32[23];
+				RememberFPRHi[12] = gHWS_fpr32[25];
+				RememberFPRHi[13] = gHWS_fpr32[27];
+				RememberFPRHi[14] = gHWS_fpr32[29];
+				RememberFPRHi[15] = gHWS_fpr32[31];
+
+				gHWS_fpr32[ 1] = gHWS_fpr32[ 2];
+				gHWS_fpr32[ 2] = gHWS_fpr32[ 4];
+				gHWS_fpr32[ 3] = gHWS_fpr32[ 6];
+				gHWS_fpr32[ 4] = gHWS_fpr32[ 8];
+				gHWS_fpr32[ 5] = gHWS_fpr32[10];
+				gHWS_fpr32[ 6] = gHWS_fpr32[12];
+				gHWS_fpr32[ 7] = gHWS_fpr32[14];
+				gHWS_fpr32[ 8] = gHWS_fpr32[16];
+				gHWS_fpr32[ 9] = gHWS_fpr32[18];
+				gHWS_fpr32[10] = gHWS_fpr32[20];
+				gHWS_fpr32[11] = gHWS_fpr32[22];
+				gHWS_fpr32[12] = gHWS_fpr32[24];
+				gHWS_fpr32[13] = gHWS_fpr32[26];
+				gHWS_fpr32[14] = gHWS_fpr32[28];
+				gHWS_fpr32[15] = gHWS_fpr32[30];
+				gHWS_fpr32[16] = gHWS_fpr32[32];
+				gHWS_fpr32[17] = gHWS_fpr32[34];
+				gHWS_fpr32[18] = gHWS_fpr32[36];
+				gHWS_fpr32[19] = gHWS_fpr32[38];
+				gHWS_fpr32[20] = gHWS_fpr32[40];
+				gHWS_fpr32[21] = gHWS_fpr32[42];
+				gHWS_fpr32[22] = gHWS_fpr32[44];
+				gHWS_fpr32[23] = gHWS_fpr32[46];
+				gHWS_fpr32[24] = gHWS_fpr32[48];
+				gHWS_fpr32[25] = gHWS_fpr32[50];
+				gHWS_fpr32[26] = gHWS_fpr32[52];
+				gHWS_fpr32[27] = gHWS_fpr32[54];
+				gHWS_fpr32[28] = gHWS_fpr32[56];
+				gHWS_fpr32[29] = gHWS_fpr32[58];
+				gHWS_fpr32[30] = gHWS_fpr32[60];
+				gHWS_fpr32[31] = gHWS_fpr32[62];
 			}
 			else //to 64bit. no span
 			{
-				int k;
-				for (k = 30; k >= 0; k -= 2)
-				{
-					gHWS_fpr32[((k + 0) * 2) + 0] = gHWS_fpr32[(k + 0)];
-					gHWS_fpr32[((k + 0) * 2) + 1] = RememberFPRHi[(k + 0)];
-					gHWS_fpr32[((k + 1) * 2) + 0] = gHWS_fpr32[(k + 1)];
-					gHWS_fpr32[((k + 1) * 2) + 1] = RememberFPRHi[(k + 1)];
-				}
+				gHWS_fpr32[62] = gHWS_fpr32[31];
+				gHWS_fpr32[60] = gHWS_fpr32[30];
+				gHWS_fpr32[58] = gHWS_fpr32[29];
+				gHWS_fpr32[56] = gHWS_fpr32[28];
+				gHWS_fpr32[54] = gHWS_fpr32[27];
+				gHWS_fpr32[52] = gHWS_fpr32[26];
+				gHWS_fpr32[50] = gHWS_fpr32[25];
+				gHWS_fpr32[48] = gHWS_fpr32[24];
+				gHWS_fpr32[46] = gHWS_fpr32[23];
+				gHWS_fpr32[44] = gHWS_fpr32[22];
+				gHWS_fpr32[42] = gHWS_fpr32[21];
+				gHWS_fpr32[40] = gHWS_fpr32[20];
+				gHWS_fpr32[38] = gHWS_fpr32[19];
+				gHWS_fpr32[36] = gHWS_fpr32[18];
+				gHWS_fpr32[34] = gHWS_fpr32[17];
+				gHWS_fpr32[32] = gHWS_fpr32[16];
+				gHWS_fpr32[30] = gHWS_fpr32[15];
+				gHWS_fpr32[28] = gHWS_fpr32[14];
+				gHWS_fpr32[26] = gHWS_fpr32[13];
+				gHWS_fpr32[24] = gHWS_fpr32[12];
+				gHWS_fpr32[22] = gHWS_fpr32[11];
+				gHWS_fpr32[20] = gHWS_fpr32[10];
+				gHWS_fpr32[18] = gHWS_fpr32[9];
+				gHWS_fpr32[16] = gHWS_fpr32[8];
+				gHWS_fpr32[14] = gHWS_fpr32[7];
+				gHWS_fpr32[12] = gHWS_fpr32[6];
+				gHWS_fpr32[10] = gHWS_fpr32[5];
+				gHWS_fpr32[ 8] = gHWS_fpr32[4];
+				gHWS_fpr32[ 6] = gHWS_fpr32[3];
+				gHWS_fpr32[ 4] = gHWS_fpr32[2];
+				gHWS_fpr32[ 2] = gHWS_fpr32[1];
+
+				gHWS_fpr32[ 1] = RememberFPRHi[0];
+				gHWS_fpr32[ 3] = RememberFPRHi[1];
+				gHWS_fpr32[ 5] = RememberFPRHi[2];
+				gHWS_fpr32[ 7] = RememberFPRHi[3];
+				gHWS_fpr32[ 9] = RememberFPRHi[4];
+				gHWS_fpr32[11] = RememberFPRHi[5];
+				gHWS_fpr32[13] = RememberFPRHi[6];
+				gHWS_fpr32[15] = RememberFPRHi[7];
+				gHWS_fpr32[17] = RememberFPRHi[8];
+				gHWS_fpr32[19] = RememberFPRHi[9];
+				gHWS_fpr32[21] = RememberFPRHi[10];
+				gHWS_fpr32[23] = RememberFPRHi[11];
+				gHWS_fpr32[25] = RememberFPRHi[12];
+				gHWS_fpr32[27] = RememberFPRHi[13];
+				gHWS_fpr32[29] = RememberFPRHi[14];
+				gHWS_fpr32[31] = RememberFPRHi[15];
 			}
 		}
 
@@ -2941,6 +3017,7 @@ void r4300i_InitHardware(HardwareState *gHWState)
 	memset(gHWState->COP0Reg, 0, sizeof(gHWState->COP0Reg));
 	memset(gHWState->COP1Con, 0, sizeof(gHWState->COP1Con));
 	memset(gHWState->fpr32, 0, sizeof(gHWState->fpr32));
+	memset(RememberFPRHi, 0, sizeof(RememberFPRHi));
 
 	r.r_.gpr[__HI].s64 = 0;
 	r.r_.gpr[__LO].s64 = 0;
