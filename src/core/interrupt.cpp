@@ -147,26 +147,29 @@ void DummyCheckInterrupts()
  */
 void Handle_MI(uint32 value)
 {
-	if((value & MI_INTR_MASK_SP_SET)) MI_INTR_MASK_REG_R |= MI_INTR_SP;
-	else if((value & MI_INTR_MASK_SP_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_SP;
+	unsigned int mask_reg = MI_INTR_MASK_REG_R;
 
-    if((value & MI_INTR_MASK_SI_SET)) MI_INTR_MASK_REG_R |= MI_INTR_SI;
-	else if((value & MI_INTR_MASK_SI_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_SI;
+	if((value & MI_INTR_MASK_SP_SET)) mask_reg |= MI_INTR_SP;
+	else if((value & MI_INTR_MASK_SP_CLR)) mask_reg &= ~MI_INTR_SP;
 
-	if((value & MI_INTR_MASK_AI_SET)) MI_INTR_MASK_REG_R |= MI_INTR_AI;
-    else if((value & MI_INTR_MASK_AI_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_AI;
+    if((value & MI_INTR_MASK_SI_SET)) mask_reg |= MI_INTR_SI;
+	else if((value & MI_INTR_MASK_SI_CLR)) mask_reg &= ~MI_INTR_SI;
 
-	if((value & MI_INTR_MASK_VI_SET)) MI_INTR_MASK_REG_R |= MI_INTR_VI;
-    else if((value & MI_INTR_MASK_VI_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_VI;
+	if((value & MI_INTR_MASK_AI_SET)) mask_reg |= MI_INTR_AI;
+    else if((value & MI_INTR_MASK_AI_CLR)) mask_reg &= ~MI_INTR_AI;
 
-	if((value & MI_INTR_MASK_PI_SET)) MI_INTR_MASK_REG_R |= MI_INTR_PI;
-    else if((value & MI_INTR_MASK_PI_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_PI;
+	if((value & MI_INTR_MASK_VI_SET)) mask_reg |= MI_INTR_VI;
+    else if((value & MI_INTR_MASK_VI_CLR)) mask_reg &= ~MI_INTR_VI;
 
-	if((value & MI_INTR_MASK_DP_SET)) MI_INTR_MASK_REG_R |= MI_INTR_DP;
-    else if((value & MI_INTR_MASK_DP_CLR)) MI_INTR_MASK_REG_R &= ~MI_INTR_DP;
+	if((value & MI_INTR_MASK_PI_SET)) mask_reg |= MI_INTR_PI;
+    else if((value & MI_INTR_MASK_PI_CLR)) mask_reg &= ~MI_INTR_PI;
 
+	if((value & MI_INTR_MASK_DP_SET)) mask_reg |= MI_INTR_DP;
+    else if((value & MI_INTR_MASK_DP_CLR)) mask_reg &= ~MI_INTR_DP;
+
+	MI_INTR_MASK_REG_R = mask_reg;
 	/* Check MI interrupt again. This is important, otherwise we will lose interrupts. */
-	if(MI_INTR_MASK_REG_R & 0x0000003F & MI_INTR_REG_R)
+	if(mask_reg & 0x0000003F & MI_INTR_REG_R)
 	{
 		/* Trigger an MI interrupt since don't know what it is */
 		SET_EXCEPTION(EXC_INT) gHWS_COP0Reg[CAUSE] |= CAUSE_IP3;
