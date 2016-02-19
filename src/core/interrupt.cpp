@@ -333,14 +333,17 @@ void Handle_SP(uint32 value)
  */
 void Handle_DPC(uint32 value)
 {
-	if(value & DPC_CLR_XBUS_DMEM_DMA) (DPC_STATUS_REG) &= ~DPC_STATUS_XBUS_DMEM_DMA;
-	if(value & DPC_SET_XBUS_DMEM_DMA) (DPC_STATUS_REG) |= DPC_STATUS_XBUS_DMEM_DMA;
+	unsigned int dpc_reg = DPC_STATUS_REG;
+	if(value & DPC_CLR_XBUS_DMEM_DMA) dpc_reg &= ~DPC_STATUS_XBUS_DMEM_DMA;
+	if(value & DPC_SET_XBUS_DMEM_DMA) dpc_reg |= DPC_STATUS_XBUS_DMEM_DMA;
 
-	if(value & DPC_CLR_FREEZE) (DPC_STATUS_REG) &= ~DPC_STATUS_FREEZE;
-	if(value & DPC_SET_FREEZE) (DPC_STATUS_REG) |= DPC_STATUS_FREEZE;
+	if(value & DPC_CLR_FREEZE) dpc_reg &= ~DPC_STATUS_FREEZE;
+	if(value & DPC_SET_FREEZE) dpc_reg |= DPC_STATUS_FREEZE;
 
-	if(value & DPC_CLR_FLUSH) (DPC_STATUS_REG) &= ~DPC_STATUS_FLUSH;
-	if(value & DPC_SET_FLUSH) (DPC_STATUS_REG) |= DPC_STATUS_FLUSH;
+	if(value & DPC_CLR_FLUSH) dpc_reg &= ~DPC_STATUS_FLUSH;
+	if(value & DPC_SET_FLUSH) dpc_reg |= DPC_STATUS_FLUSH;
+
+	DPC_STATUS_REG = dpc_reg;
 	
 	if ((value & DPC_CLR_FREEZE) != 0)
 	{
