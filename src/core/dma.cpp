@@ -91,6 +91,7 @@ void FastPIMemoryCopy(void)
 	register int				i;
 	unsigned register __int32	target; /* = PIDMATargetMemory+PIDMATargetAddress; */
 	unsigned register __int32	source; /* = PIDMASourceMemory+PIDMASourceAddress; */
+	unsigned register __int32	len;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 	if(PIDMAInProgress == DMA_PI_WRITE && currentromoptions.Code_Check == CODE_CHECK_PROTECT_MEMORY)
@@ -113,46 +114,56 @@ void FastPIMemoryCopy(void)
 	
 	target = (uint32) PMEM_READ_UWORD(PIDMATargetAddress);
 	source = (uint32) PMEM_READ_UWORD(PIDMASourceAddress);
-	
-	if((target & 3) == 0 && (source & 3) == 0 && (PIDMALength & 3) == 0)		/* DWORD align */
+	len = PIDMALength;
+	if((target & 3) == 0 && (source & 3) == 0 && (len & 3) == 0)		/* DWORD align */
 	{
-		/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-		int i = -(((__int32) PIDMALength) >> 2);
-		/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-		__asm
-		{
-			pushad
-			mov eax, i
-			mov edx, target
-			mov ebx, source
-			align 16
-_Label :
-			and eax, eax
-			jz _Label2
-			mov ecx, dword ptr[ebx]
-			inc eax
-			mov dword ptr[edx], ecx
-			add ebx, 4
-			add edx, 4
-			jmp _Label
-_Label2 :
-			popad
-		}
+		memcpy((void*)target, (void*)source, len);
 	}
-
-	else if((target & 1) == 0 && (source & 1) == 0 && (PIDMALength & 1) == 0)	/* WORD align */
+	else if((target & 1) == 0 && (source & 1) == 0 && (len & 1) == 0)	/* WORD align */
 	{
-		for(i = -(((__int32) PIDMALength) >> 1); i < 0; i++)
+		if ((len & 2) == 0)
 		{
-			*(uint16 *) (target ^ 2) = *(uint16 *) (source ^ 2);
-			target += 2;
-			source += 2;
+			if ((target & 2) == 0)
+			{
+				for (i = 0; i < len; i += 4)
+				{
+					*(uint16 *)((target + i) + 2) = *(uint16 *)((source + i) - 2);
+					*(uint16 *)((target + i) + 0) = *(uint16 *)((source + i) + 4);
+				}
+			}
+			else
+			{
+				if ((source & 2) == 0)
+				{
+					for (i = 0; i < len; i += 4)
+					{
+						*(uint16 *)((target + i) - 2) = *(uint16 *)((source + i) + 2);
+						*(uint16 *)((target + i) + 4) = *(uint16 *)((source + i) + 0);
+					}
+				}
+				else
+				{
+					for (i = 0; i < len; i += 4)
+					{
+						*(uint16 *)((target + i) - 2) = *(uint16 *)((source + i) - 2);
+						*(uint16 *)((target + i) + 4) = *(uint16 *)((source + i) + 4);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (i = -(((__int32)len) >> 1); i < 0; i++)
+			{
+				*(uint16 *)(target ^ 2) = *(uint16 *)(source ^ 2);
+				target += 2;
+				source += 2;
+			}
 		}
 	}
 	else	/* not align */
 	{
-		for(i = -(__int32) PIDMALength; i < 0; i++) 
+		for (i = -(__int32)len; i < 0; i++)
 		{
 			*(uint8 *) (target++ ^ 0x3) = *(uint8 *) (source++ ^ 0x3);
 		}
