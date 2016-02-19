@@ -184,14 +184,21 @@ void Handle_MI(uint32 value)
  */
 void WriteMI_ModeReg(uint32 value)
 {
-	if(value & MI_SET_RDRAM) MI_INIT_MODE_REG_R |= MI_MODE_RDRAM;
-	else if(value & MI_CLR_RDRAM) MI_INIT_MODE_REG_R &= ~MI_MODE_RDRAM;
+	unsigned int init_mode_reg_r = MI_INIT_MODE_REG_R;
 
-	if(value & MI_SET_INIT) MI_INIT_MODE_REG_R |= MI_MODE_INIT;
-    else if(value & MI_CLR_INIT) MI_INIT_MODE_REG_R &= ~MI_MODE_INIT;
+	init_mode_reg_r &= ~0x7F;
+	init_mode_reg_r |= (value & 0x7F);
 
-	if(value & MI_SET_EBUS) MI_INIT_MODE_REG_R |= MI_MODE_EBUS;
-    else if(value & MI_CLR_EBUS) MI_INIT_MODE_REG_R &= ~MI_MODE_EBUS;
+	if(value & MI_SET_RDRAM) init_mode_reg_r |= MI_MODE_RDRAM;
+	else if(value & MI_CLR_RDRAM) init_mode_reg_r &= ~MI_MODE_RDRAM;
+
+	if(value & MI_SET_INIT) init_mode_reg_r |= MI_MODE_INIT;
+    else if(value & MI_CLR_INIT) init_mode_reg_r &= ~MI_MODE_INIT;
+
+	if(value & MI_SET_EBUS) init_mode_reg_r |= MI_MODE_EBUS;
+    else if(value & MI_CLR_EBUS) init_mode_reg_r &= ~MI_MODE_EBUS;
+
+	MI_INIT_MODE_REG_R = init_mode_reg_r;
 
 	if(value & MI_CLR_DP_INTR)
 	{
