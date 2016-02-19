@@ -213,17 +213,18 @@ void WriteMI_ModeReg(uint32 value)
  */
 void Handle_SP(uint32 value)
 {
+	unsigned int sp_status_reg = SP_STATUS_REG;
 	if ((value & SP_CLR_HALT) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_HALT;
+		sp_status_reg &= ~SP_STATUS_HALT;
 	}
 	if ((value & SP_SET_HALT) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_HALT;
+		sp_status_reg |= SP_STATUS_HALT;
 	}
 	if ((value & SP_CLR_BROKE) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_BROKE;
+		sp_status_reg &= ~SP_STATUS_BROKE;
 	}
 	if ((value & SP_CLR_INTR) != 0)
 	{
@@ -232,90 +233,91 @@ void Handle_SP(uint32 value)
 
 	if ((value & SP_CLR_SSTEP) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SSTEP;
+		sp_status_reg &= ~SP_STATUS_SSTEP;
 	}
 	if ((value & SP_SET_SSTEP) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SSTEP;
+		sp_status_reg |= SP_STATUS_SSTEP;
 	}
 	if ((value & SP_CLR_INTR_BREAK) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_INTR_BREAK;
+		sp_status_reg &= ~SP_STATUS_INTR_BREAK;
 	}
 	if ((value & SP_SET_INTR_BREAK) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_INTR_BREAK;
+		sp_status_reg |= SP_STATUS_INTR_BREAK;
 	}
 	if ((value & SP_CLR_YIELD) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_YIELD;
+		sp_status_reg &= ~SP_STATUS_YIELD;
 	}
 	if ((value & SP_SET_YIELD) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_YIELD;
+		sp_status_reg |= SP_STATUS_YIELD;
 	}
 
 
 	if ((value & SP_CLR_YIELDED) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_YIELDED;
+		sp_status_reg &= ~SP_STATUS_YIELDED;
 	}
 	if ((value & SP_SET_YIELDED) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_YIELDED;
+		sp_status_reg |= SP_STATUS_YIELDED;
 	}
 	if ((value & SP_CLR_TASKDONE) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_TASKDONE;
+		sp_status_reg &= ~SP_STATUS_TASKDONE;
 	}
 	if ((value & SP_SET_TASKDONE) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_TASKDONE;
+		sp_status_reg |= SP_STATUS_TASKDONE;
 	}
 	if ((value & SP_CLR_SIG3) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SIG3;
+		sp_status_reg &= ~SP_STATUS_SIG3;
 	}
 	if ((value & SP_SET_SIG3) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SIG3;
+		sp_status_reg |= SP_STATUS_SIG3;
 	}
 	if ((value & SP_CLR_SIG4) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SIG4;
+		sp_status_reg &= ~SP_STATUS_SIG4;
 	}
 	if ((value & SP_SET_SIG4) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SIG4;
+		sp_status_reg |= SP_STATUS_SIG4;
 	}
 	if ((value & SP_CLR_SIG5) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SIG5;
+		sp_status_reg &= ~SP_STATUS_SIG5;
 	}
 	if ((value & SP_SET_SIG5) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SIG5;
+		sp_status_reg |= SP_STATUS_SIG5;
 	}
 	if ((value & SP_CLR_SIG6) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SIG6;
+		sp_status_reg &= ~SP_STATUS_SIG6;
 	}
 	if ((value & SP_SET_SIG6) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SIG6;
+		sp_status_reg |= SP_STATUS_SIG6;
 	}
 	if ((value & SP_CLR_SIG7) != 0)
 	{
-		(SP_STATUS_REG) &= ~SP_STATUS_SIG7;
+		sp_status_reg &= ~SP_STATUS_SIG7;
 	}
 	if ((value & SP_SET_SIG7) != 0)
 	{
-		(SP_STATUS_REG) |= SP_STATUS_SIG7;
+		sp_status_reg |= SP_STATUS_SIG7;
 	}
 
-	if (( SP_STATUS_REG & SP_STATUS_HALT) == 0)
+	SP_STATUS_REG = sp_status_reg;
+	if (( sp_status_reg & SP_STATUS_HALT) == 0)
 	{
-		if ( ( SP_STATUS_REG & SP_STATUS_BROKE) == 0)
+		if ( ( sp_status_reg & SP_STATUS_BROKE) == 0)
 		{
 			DEBUG_SP_TASK_MACRO(TRACE0("SP Task is triggered"));
 			sp_hle_task = HLE_DMEM_TASK;
